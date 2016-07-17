@@ -33,15 +33,17 @@ def cleanup(install_to)
 end
 
 def download_wkhtmltoimage(arch)
-  if ENV['BZIP']
-    download = "wkhtmltoimage-0.10.0_beta4-static-#{arch}.tar.bz2"
-    url = "http://wkhtmltopdf.googlecode.com/files/wkhtmltoimage-0.10.0_beta4-static-#{arch}.tar.bz2"
-  else
-    page = open(GOOGLE_CODE_URL).read
-    download = page.match(/href=".*name=(.*wkhtmltoimage-.*#{arch}.*?)&/) or cant_find_binaries(arch)
-    download = download[1]
-    url = "http://wkhtmltopdf.googlecode.com/files/#{download}"
-  end
+  #if ENV['BZIP']
+    #download = "wkhtmltoimage-0.10.0_beta4-static-#{arch}.tar.bz2"
+    #url = "http://wkhtmltopdf.googlecode.com/files/wkhtmltoimage-0.10.0_beta4-static-#{arch}.tar.bz2"
+  #else
+    #page = open(GOOGLE_CODE_URL).read
+    #download = page.match(/href=".*name=(.*wkhtmltoimage-.*#{arch}.*?)&/) or cant_find_binaries(arch)
+    #download = download[1]
+    #url = "http://wkhtmltopdf.googlecode.com/files/#{download}"
+  #end
+  download = "wkhtmltox-0.12.3_linux-generic-amd64.tar.xz"
+  url = "http://download.gna.org/wkhtmltopdf/0.12/0.12.3/#{download}"
   puts "Downloading #{download} from #{url}"
 
   `curl #{url} > #{download}`
@@ -58,6 +60,9 @@ def install(download, arch, install_to)
     puts "Warning: lzcat is broken on Ubuntu. Re-run with --use-bzip to install alternate version"
     `lzcat #{download} | tar x`
     `mv wkhtmltoimage-#{arch} #{install_to}`
+  elsif download =~ /.tar.xz$/
+    `tar xvf #{download}`
+    `mv #{download}/bin/wkhtmltoimage #{install_to}`
   else
     `mv #{download} #{install_to}`
   end
